@@ -1,0 +1,15 @@
+---
+version: 2.1
+
+orbs:
+  docker: aengelas/docker@volatile
+
+workflows:
+  build_and_push:
+    jobs:
+      - docker/build-test-push:
+          namespace: brownjohnf
+          project: caddy
+          test_command: which caddy
+          test_target: main
+
