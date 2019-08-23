@@ -1,14 +1,16 @@
-FROM library/golang:1.11.1-alpine as build
+FROM library/golang:1.12.5-alpine as build
+
+ENV GO111MODULE on
+
+WORKDIR /src
+COPY main.go ./.
 
 RUN apk add --no-cache git \
-  && go get github.com/mholt/caddy/caddy \
-  && go get github.com/caddyserver/builds
-
-WORKDIR $GOPATH/src/github.com/mholt/caddy/caddy
-RUN sed -i 's/var EnableTelemetry.*/var EnableTelemetry = false/' caddymain/run.go \
-  && cat caddymain/run.go \
-  && go run build.go \
+  && go mod init caddy \
+  && go get github.com/caddyserver/caddy \
+  && go build \
   && mkdir /out \
+  && ./caddy -version \
   && cp caddy /out/caddy
 
 FROM library/alpine:3.7 as main
